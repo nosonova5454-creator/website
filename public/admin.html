@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель — ЧитайСтрана</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="homepage.html" class="logo"><span>ЧИТАЙ</span><span>СТРАНА</span></a>
+
+             
+            <div class="catalog-wrap">
+                <button class="catalog-btn" id="catalogBtn" onclick="toggleCatalog()">
+                    <span class="cat-icon">☰</span> Каталог
+                </button>
+         </div>
+
+            <form class="search-form" action="search.html" method="get">
+                <input type="search" name="q" class="search-input" placeholder="Найти книгу, автора…">
+            </form>
+
+            <div class="header-icons">
+                <span id="adminName" style="color:var(--primary);font-weight:600;"></span>
+                <a href="#" onclick="logout()">Выйти</a>
+                <a href="cart.html">Корзина</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div class="catalog-overlay" id="catalogOverlay" onclick="closeCatalog()"></div>
+
+<div class="catalog-dropdown" id="catalogDropdown">
+    <div class="catalog-menu-inner">
+  
+        <div class="catalog-categories">
+            <a href="catalog.html?genre_id=1" class="cat-item">
+                Романы и проза <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=2" class="cat-item">
+                Фантастика и фэнтези <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=3" class="cat-item">
+                Детективы и триллеры <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=4" class="cat-item">
+                Классическая литература <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=5" class="cat-item">
+                Манга и комиксы <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=6" class="cat-item">
+                Детские книги <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=7" class="cat-item">
+                Психология и саморазвитие <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=8" class="cat-item">
+                История и документальное <span class="cat-arrow">›</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="homepage.html">Главная</a> <span>›</span> Админ-панель
+    </nav>
+
+    <!-- Вкладка админ -->
+    <div class="admin-tabs">
+        <button class="admin-tab-btn active" data-tab="products">📚 Управление книгами</button>
+        <button class="admin-tab-btn" data-tab="orders">📦 Управление заказами</button>
+        <button class="admin-tab-btn" data-tab="users">👥 Управление пользователями</button>
+        <button class="admin-tab-btn" data-tab="reviews">✍️ Модерация отзывов</button>
+    </div>
+
+   
+    <div class="admin-tab-panel active" id="tab-products">
+        <div class="admin-header">
+            <h2>Каталог книг</h2>
+            <button class="btn-primary" onclick="openProductModal()">+ Добавить книгу</button>
+        </div>
+        
+     <div class="admin-filters">
+            <input type="text" id="productSearch" placeholder="Поиск по названию или автору..." class="search-input" style="max-width:300px">
+            <select id="categoryFilter">
+                <option value="">Все категории</option>
+                <option value="romans">Романы и проза</option>
+                <option value="fantasy">Фантастика и фэнтези</option>
+                <option value="detective">Детективы</option>
+                <option value="classic">Классика</option>
+                <option value="manga">Манга и комиксы</option>
+                <option value="children">Детские книги</option>
+                <option value="psychology">Психология</option>
+                <option value="history">История</option>
+            </select>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>ID</th><th>Обложка</th><th>Название</th><th>Автор</th><th>Цена</th><th>Категория</th><th>Действия</th></tr>
+                </thead>
+                <tbody id="productsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+    <div class="admin-tab-panel" id="tab-orders">
+        <div class="admin-header">
+            <h2>Все заказы</h2>
+            <div class="admin-filters">
+            <select id="orderStatusFilter">
+                    <option value="">Все статусы</option>
+                    <option value="processing">⏳ Обрабатывается</option>
+                    <option value="confirmed">✅ Подтверждён</option>
+                    <option value="shipping">🚚 В доставке</option>
+                    <option value="delivered">📦 Доставлен</option>
+                    <option value="cancelled">❌ Отменён</option>
+                </select>
+                <input type="text" id="orderSearch" placeholder="Поиск по номеру или покупателю..." class="search-input" style="max-width:250px">
+            </div>
+        </div>
+        
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>№ заказа</th><th>Дата</th><th>Покупатель</th><th>Адрес доставки</th><th>Сумма</th><th>Статус</th><th>Действия</th></tr>
+                </thead>
+                <tbody id="ordersTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+  
+    <div class="admin-tab-panel" id="tab-users">
+        <div class="admin-header">
+            <h2>Пользователи</h2>
+            <input type="text" id="userSearch" placeholder="Поиск по имени или email..." class="search-input" style="max-width:300px">
+        </div>
+        
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>ID</th><th>Имя</th><th>Email</th><th>Роль</th><th>Дата регистрации</th><th>Заказов</th><th>Действия</th></tr>
+                </thead>
+                <tbody id="usersTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="admin-tab-panel" id="tab-reviews">
+        <div class="admin-header">
+            <h2>Модерация отзывов</h2>
+            <select id="reviewStatusFilter">
+                <option value="">Все</option>
+                <option value="pending">На модерации</option>
+                <option value="approved">Одобренные</option>
+                <option value="hidden">Скрытые</option>
+            </select>
+        </div>
+        
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>Книга</th><th>Пользователь</th><th>Рейтинг</th><th>Отзыв</th><th>Дата</th><th>Статус</th><th>Действия</th></tr>
+                </thead>
+                <tbody id="reviewsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="productModal">
+    <div class="modal-content" style="max-width:700px">
+        <div class="modal-header">
+            <h3 id="modalTitle">Добавить книгу</h3>
+            <button class="modal-close" onclick="closeProductModal()">&times;</button>
+        </div>
+        <form id="productForm">
+            <input type="hidden" id="productId">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group" style="grid-column:1/-1">
+                    <label>Название книги *</label>
+                    <input type="text" id="prodTitle" required placeholder="Введите название">
+                </div>
+                <div class="form-group">
+                    <label>Автор *</label>
+                    <input type="text" id="prodAuthor" required placeholder="Фамилия Имя">
+                </div>
+                <div class="form-group">
+                    <label>Жанр</label>
+                    <select id="prodGenre"></select>
+                </div>
+                <div class="form-group">
+                    <label>Цена (₽) *</label>
+                    <input type="number" id="prodPrice" required min="0" step="1" placeholder="599">
+                </div>
+                <div class="form-group">
+                    <label>Старая цена (до скидки)</label>
+                    <input type="number" id="prodOldPrice" min="0" step="1" placeholder="707">
+                </div>
+                <div class="form-group">
+                    <label>Издательство</label>
+                    <select id="prodPublisher"></select>
+                </div>
+                <div class="form-group">
+                    <label>Тип обложки</label>
+                    <select id="prodCoverType"></select>
+                </div>
+                <div class="form-group">
+                    <label>Год издания</label>
+                    <input type="number" id="prodYear" min="1800" max="2099" placeholder="2024">
+                </div>
+                <div class="form-group">
+                    <label>Количество страниц</label>
+                    <input type="number" id="prodPages" min="1" placeholder="416">
+                </div>
+                <div class="form-group">
+                    <label>Вес, г</label>
+                    <input type="number" id="prodWeight" min="0" placeholder="410">
+                </div>
+                <div class="form-group">
+                    <label>Размер (Ш×В×Т, см)</label>
+                    <input type="text" id="prodDimensions" placeholder="14.1×21×3.3">
+                </div>
+                <div class="form-group">
+                    <label>Остаток на складе</label>
+                    <input type="number" id="prodStock" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>ISBN</label>
+                    <input type="text" id="prodIsbn" placeholder="978-5-04-000000-0">
+                </div>
+                <div class="form-group" style="grid-column:1/-1">
+                    <label>URL обложки</label>
+                    <input type="text" id="prodCover" placeholder="https://...">
+                </div>
+                <div class="form-group" style="display:flex;align-items:center;gap:24px;padding-top:8px">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500">
+                        <input type="checkbox" id="prodTagNew"> Метка «Новинка»
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500">
+                        <input type="checkbox" id="prodTagPopular"> Метка «Популярное»
+                    </label>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:8px">
+                <label>Описание</label>
+                <textarea id="prodDescription" rows="4" placeholder="Краткое описание книги..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-secondary" onclick="closeProductModal()">Отмена</button>
+                <button type="submit" class="btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="modal" id="orderModal">
+    <div class="modal-content" style="max-width:500px">
+        <div class="modal-header">
+            <h3>Информация о заказе</h3>
+            <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+        </div>
+        <form id="orderForm">
+            <input type="hidden" id="orderId">
+            <div class="form-group">
+                <label>Статус заказа</label>
+                <select id="orderStatus">
+                    <option value="processing">⏳ Обрабатывается</option>
+                    <option value="confirmed">✅ Подтверждён</option>
+                    <option value="shipping">🚚 В доставке</option>
+                    <option value="delivered">📦 Доставлен</option>
+                    <option value="cancelled">❌ Отменён</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Информация о доставке</label>
+                <textarea id="deliveryInfo" rows="3" placeholder="Адрес доставки, получатель, контактный телефон..."></textarea>
+            </div>
+            <div class="form-group">
+                <label></label>
+                <input type="text" id="trackingNumber" placeholder="Трек-номер для отслеживания">
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-secondary" onclick="closeOrderModal()">Отмена</button>
+                <button type="submit" class="btn-primary">Сохранить изменения</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="modal" id="userModal">
+    <div class="modal-content small">
+        <div class="modal-header">
+            <h3>Редактирование пользователя</h3>
+            <button class="modal-close" onclick="closeUserModal()">&times;</button>
+        </div>
+        <form id="userForm">
+            <input type="hidden" id="editUserId">
+            <div class="form-group">
+                <label>Имя</label>
+                <input type="text" id="editUserName" required>
+            </div>
+            <div class="form-group">
+                <label>Фамилия</label>
+                <input type="text" id="editUserLastName">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="editUserEmail" required>
+            </div>
+            <div class="form-group">
+                <label>Роль</label>
+                <select id="editUserRole">
+                    <option value="user">Пользователь</option>
+                    <option value="admin">Администратор</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Новый пароль (оставьте пустым, чтобы не менять)</label>
+                <input type="password" id="editUserPassword" placeholder="Введите новый пароль">
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-secondary" onclick="closeUserModal()">Отмена</button>
+                <button type="submit" class="btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-block">
+                <span class="footer-block-title">ЧитайСтрана</span>
+                <p class="footer-desc">Книжный магазин с лучшими новинками и бестселлерами.</p>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Навигация</span>
+                <a href="#">Новинки</a><a href="#">Популярное</a><a href="catalog.html">Каталог</a>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Контакты</span>
+                <a href="#">О нас</a><a href="#">Доставка и оплата</a><a href="#">Помощь</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2025 ЧитайСтрана. Все права защищены.</div>
+    </div>
+</footer>
+
+<script src="api.js"></script>
+<script src="admin.js"></script>
+<script src="scriptcatalog.js"></script>
+</body>
+</html>

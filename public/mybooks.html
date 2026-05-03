@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои книги — ЧитайСтрана</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="homepage.html" class="logo"><span>ЧИТАЙ</span><span>СТРАНА</span></a>
+
+       
+            <div class="catalog-wrap">
+                <button class="catalog-btn" id="catalogBtn" onclick="toggleCatalog()">
+                    <span class="cat-icon">☰</span> Каталог
+                </button>
+            </div>
+
+            <form class="search-form" action="search.html" method="get">
+                <input type="search" name="q" class="search-input" placeholder="Найти книгу, автора…">
+            </form>
+
+            <div class="header-icons">
+                <a href="auth.html">Войти</a>
+                <a href="orders.html">Заказы</a>
+                <a href="mybooks.html">Мои книги</a>
+                <a href="cart.html">Корзина</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div class="catalog-overlay" id="catalogOverlay" onclick="closeCatalog()"></div>
+
+<div class="catalog-dropdown" id="catalogDropdown">
+    <div class="catalog-menu-inner">
+
+     
+        <div class="catalog-categories">
+            <div class="cat-item active" onmouseenter="showSubcat('romans')">
+                 Романы и проза <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('fantasy')">
+                 Фантастика и фэнтези <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('detective')">
+                 Детективы и триллеры <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('classic')">
+                 Классическая литература <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('manga')">
+                 Манга и комиксы <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('children')">
+                 Детские книги <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('psychology')">
+                 Психология и саморазвитие <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('history')">
+                 История и документальное <span class="cat-arrow">›</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="homepage.html">Главная</a> <span>›</span> Мои книги
+    </nav>
+
+    <div class="orders-layout">
+
+        <nav class="profile-nav">
+            <a href="orders.html"><span class="nav-icon">📦</span> Покупки</a>
+         <a href="mybooks.html" class="active"><span class="nav-icon">❤️</span>Избранное</a>
+            <a href="auth.html"><span class="nav-icon">👤</span> Профиль</a>
+            
+        </nav>
+
+   
+        <div>
+            <h1 class="orders-title">Мои книги</h1>
+
+        
+            <div class="mybooks-tabs">
+                <button type="button" class="mybooks-tab active">Избранное <span id="wishlist-tab-count" style="color:#aaa;font-weight:400">0</span></button>
+          </div>
+
+            <div class="mybooks-panel active" id="panel-wishlist">
+                <div class="wishlist-grid" id="wishlist-root"></div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-block">
+                <span class="footer-block-title">ЧитайСтрана</span>
+                <p class="footer-desc">Книжный магазин с лучшими новинками и бестселлерами. Доставка по всей России.</p>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Навигация</span>
+             <a href="#">Новинки</a>
+             <a href="#">Популярное</a>
+            <a href="catalog.html">Каталог</a>
+             <a href="#">Авторы</a>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Контакты</span>
+                <a href="#">О нас</a>
+                <a href="#">Доставка и оплата</a>
+                <a href="#">Возврат</a>
+                <a href="#">Помощь</a>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Соцсети</span>
+                <a href="#">ВКонтакте</a>
+                <a href="#">Telegram</a>
+                <a href="#">YouTube</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 ЧитайСтрана. Все права защищены.</div>
+    </div>
+</footer>
+
+
+<script src="api.js"></script>
+<script src="scriptcatalog.js"></script>
+<script src="mybooks-favorites.js"></script>
+</body>
+</html>

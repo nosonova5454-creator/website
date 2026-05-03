@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход — ЧитайСтрана</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="auth-body">
+
+<header class="header-auth">
+    <a href="homepage.html" class="logo">
+        <span>ЧИТАЙ</span><span>СТРАНА</span>
+    </a>
+    <a href="homepage.html" class="header-back">← Вернуться в магазин</a>
+</header>
+
+<main>
+    <div class="auth-wrapper">
+
+        <p id="auth-error" class="auth-msg-error" role="alert"></p>
+
+        <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchTab('login', this)">Вход</button>
+            <button class="auth-tab" onclick="switchTab('register', this)">Регистрация</button>
+        </div>
+
+        <div class="auth-card">
+
+        
+            <div class="form-panel active" id="panel-login">
+                <div class="auth-title">С возвращением!</div>
+                <form id="form-login">
+                    <div class="form-group">
+                        <label for="login-email">Логин или Email</label>
+                        <input type="text" id="login-email" name="login" placeholder="example@mail.ru">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Пароль</label>
+                        <input type="password" id="login-password" name="password" placeholder="••••••••">
+                    </div>
+                    <a href="#" class="forgot-link">Забыли пароль?</a>
+                    <button type="submit" class="btn-submit">Войти</button>
+                </form>
+                <p class="terms">
+                    Нажимая «Войти», вы соглашаетесь с <a href="#">условиями использования</a> и <a href="#">политикой конфиденциальности</a>
+                </p>
+            </div>
+
+           
+            <div class="form-panel" id="panel-register">
+                <div class="auth-title">Создать аккаунт</div>
+                <form id="form-register">
+                    <div class="form-group">
+                        <label for="reg-name">Имя</label>
+                        <input type="text" id="reg-name" name="name" placeholder="Как вас зовут?" autocomplete="given-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-login">Логин</label>
+                        <input type="text" id="reg-login" name="login" placeholder="Уникальное имя пользователя" autocomplete="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" name="email" placeholder="example@mail.ru">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Пароль</label>
+                        <input type="password" id="reg-password" name="password" placeholder="Минимум 8 символов">
+                        <div class="input-hint">Используйте буквы, цифры и символы</div>
+                    </div>
+                    <button type="submit" class="btn-submit">Зарегистрироваться</button>
+                </form>
+                <p class="terms">
+                    Регистрируясь, вы соглашаетесь с <a href="#">условиями использования</a> и <a href="#">политикой конфиденциальности</a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer class="footer-auth">
+    <a href="#">О нас</a>
+    <a href="#">Помощь</a>
+    <a href="#">Политика конфиденциальности</a>
+    <span>© 2026 ЧитайСтрана</span>
+</footer>
+
+<script src="api.js"></script>
+<script>
+    function switchTab(tab, btn) {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + tab).classList.add('active');
+        clearAuthError();
+    }
+
+    const authErrorEl = document.getElementById('auth-error');
+    function showAuthError(msg) {
+        authErrorEl.textContent = msg;
+        authErrorEl.classList.add('visible');
+    }
+    function clearAuthError() {
+        authErrorEl.textContent = '';
+        authErrorEl.classList.remove('visible');
+    }
+
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearAuthError();
+        const login = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        if (!login || !password) {
+            showAuthError('Введите логин или email и пароль');
+            return;
+        }
+        try {
+            await Auth.login(login, password);
+            window.location.href = 'homepage.html';
+        } catch (err) {
+            showAuthError(err.message || 'Не удалось войти');
+        }
+    });
+
+    document.getElementById('form-register').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearAuthError();
+        const first_name = document.getElementById('reg-name').value.trim();
+        const login = document.getElementById('reg-login').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-password').value;
+        if (!login || !email || !password) {
+            showAuthError('Заполните логин, email и пароль');
+            return;
+        }
+        if (password.length < 8) {
+            showAuthError('Пароль — не менее 8 символов');
+            return;
+        }
+        try {
+            await Auth.register(login, email, password, first_name);
+            window.location.href = 'homepage.html';
+        } catch (err) {
+            showAuthError(err.message || 'Не удалось зарегистрироваться');
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина — ЧитайСтрана</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="homepage.html" class="logo"><span>ЧИТАЙ</span><span>СТРАНА</span></a>
+
+            
+            <div class="catalog-wrap">
+                <button class="catalog-btn" id="catalogBtn" onclick="toggleCatalog()">
+                    <span class="cat-icon">☰</span> Каталог
+                </button>
+            </div>
+
+            <form class="search-form" action="search.html" method="get">
+                <input type="search" name="q" class="search-input" placeholder="Найти книгу, автора…">
+            </form>
+
+            <div class="header-icons">
+                <a href="auth.html">Войти</a>
+                <a href="orders.html">Заказы</a>
+                <a href="mybooks.html">Мои книги</a>
+                <a href="cart.html">Корзина</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div class="catalog-overlay" id="catalogOverlay" onclick="closeCatalog()"></div>
+
+<div class="catalog-dropdown" id="catalogDropdown">
+    <div class="catalog-menu-inner">
+   
+        <div class="catalog-categories">
+            <a href="catalog.html?genre_id=1" class="cat-item">
+             Романы и проза <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=2" class="cat-item">
+                Фантастика и фэнтези <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=3" class="cat-item">
+                Детективы и триллеры <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=4" class="cat-item">
+             Классическая литература <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=5" class="cat-item">
+                Манга и комиксы <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=6" class="cat-item">
+                Детские книги <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=7" class="cat-item">
+                Психология и саморазвитие <span class="cat-arrow">›</span>
+            </a>
+            <a href="catalog.html?genre_id=8" class="cat-item">
+            История и документальное <span class="cat-arrow">›</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="homepage.html">Главная</a> <span>›</span> Корзина
+    </nav>
+
+    <div class="cart-layout">
+
+        
+        <div class="cart-items">
+            <div class="cart-header">
+                <h1 class="cart-title">Корзина <span id="cart-title-count" style="color:var(--gray);font-size:1.2rem;font-weight:500"></span></h1>
+                <button type="button" class="cart-clear">Очистить корзину</button>
+            </div>
+
+            <div id="cart-items-root"></div>
+        </div>
+
+     
+        <div class="cart-summary">
+            <div class="summary-title">Итого</div>
+
+            <div class="summary-row" id="cart-summary-items"><span>Товары</span><span>—</span></div>
+
+            <div class="summary-row total"><span>К оплате</span><span id="cart-total-pay">—</span></div>
+
+            <button type="button" class="btn-checkout" id="btn-checkout">Оформить заказ</button>
+
+            <div style="margin-top:14px;font-size:0.8rem;color:#aaa;text-align:center">
+                Нажимая кнопку, вы соглашаетесь с <a href="#" style="color:var(--primary)">условиями покупки</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-block">
+                <span class="footer-block-title">ЧитайСтрана</span>
+                <p class="footer-desc">Книжный магазин с лучшими новинками и бестселлерами. Доставка по всей России.</p>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Навигация</span>
+                <a href="#">Новинки</a><a href="#">Популярное</a><a href="catalog.html">Каталог</a><a href="#">Авторы</a>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Контакты</span>
+                <a href="#">О нас</a><a href="#">Доставка и оплата</a><a href="#">Возврат</a><a href="#">Помощь</a>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Соцсети</span>
+                <a href="#">ВКонтакте</a><a href="#">Telegram</a><a href="#">YouTube</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 ЧитайСтрана. Все права защищены.</div>
+    </div>
+</footer>
+
+<script src="api.js"></script>
+<script src="cart-page.js"></script>
+<script src="scriptcatalog.js"></script>
+</body>
+</html>

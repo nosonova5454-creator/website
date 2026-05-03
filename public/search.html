@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск — ЧитайСтрана</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="homepage.html" class="logo"><span>ЧИТАЙ</span><span>СТРАНА</span></a>
+            <form class="search-form" action="search.html" method="get">
+                <input type="search" name="q" id="search-q-input" class="search-input" placeholder="Найти книгу, автора…">
+            </form>
+            <div class="header-icons">
+                <a href="auth.html">Войти</a>
+                <a href="orders.html">Заказы</a>
+                <a href="mybooks.html">Мои книги</a>
+                <a href="cart.html">Корзина</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container" style="padding-bottom:48px">
+    <nav class="breadcrumb">
+        <a href="homepage.html">Главная</a> <span>›</span> Поиск
+    </nav>
+    <h1 class="orders-title" id="search-title">Поиск</h1>
+    <p id="search-count" style="color:#666;margin-bottom:16px"></p>
+    <div class="books-grid" id="search-grid"></div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-bottom" style="padding:24px 0">© 2026 ЧитайСтрана</div>
+    </div>
+</footer>
+
+<script src="api.js"></script>
+<script src="search-page.js"></script>
+</body>
+</html>

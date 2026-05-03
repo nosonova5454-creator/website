@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книга — ЧитайСтрана</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="homepage.html" class="logo"><span>ЧИТАЙ</span><span>СТРАНА</span></a>
+
+          
+            <div class="catalog-wrap">
+                <button class="catalog-btn" id="catalogBtn" onclick="toggleCatalog()">
+                    <span class="cat-icon">☰</span> Каталог
+                </button>
+            </div>
+
+            <form class="search-form" action="search.html" method="get">
+                <input type="search" name="q" class="search-input" placeholder="Найти книгу, автора…">
+            </form>
+
+            <div class="header-icons">
+                <a href="auth.html">Войти</a>
+                <a href="orders.html">Заказы</a>
+                <a href="mybooks.html">Мои книги</a>
+                <a href="cart.html">Корзина</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div class="catalog-overlay" id="catalogOverlay" onclick="closeCatalog()"></div>
+
+<div class="catalog-dropdown" id="catalogDropdown">
+    <div class="catalog-menu-inner">
+
+    
+        <div class="catalog-categories">
+            <div class="cat-item active" onmouseenter="showSubcat('romans')">
+                 Романы и проза <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('fantasy')">
+                 Фантастика и фэнтези <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('detective')">
+                 Детективы и триллеры <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('classic')">
+                 Классическая литература <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('manga')">
+                 Манга и комиксы <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('children')">
+                 Детские книги <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('psychology')">
+                 Психология и саморазвитие <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('history')">
+                 История и документальное <span class="cat-arrow">›</span>
+            </div>
+        </div>
+
+     
+
+        <div class="catalog-subcats active" id="subcat-romans">
+            <div class="subcat-title">Романы и проза</div>
+            <div class="subcat-grid">
+                <a href="catalog.html" class="subcat-link">Современная проза</a>
+                <a href="catalog.html" class="subcat-link">Любовные романы</a>
+                <a href="catalog.html" class="subcat-link">Исторические романы</a>
+                <a href="catalog.html" class="subcat-link">Зарубежная проза</a>
+                <a href="catalog.html" class="subcat-link">Отечественная проза</a>
+                <a href="catalog.html" class="subcat-link">Новинки</a>
+            </div>
+        </div>
+
+        <div class="catalog-subcats" id="subcat-fantasy">
+            <div class="subcat-title">Фантастика и фэнтези</div>
+            <div class="subcat-grid">
+                <a href="catalog.html" class="subcat-link">Научная фантастика</a>
+                <a href="catalog.html" class="subcat-link">Антиутопия</a>
+                <a href="catalog.html" class="subcat-link">Постапокалипсис</a>
+            </div>
+        </div>
+
+        <div class="catalog-subcats" id="subcat-detective">
+            <div class="subcat-title">Детективы и триллеры</div>
+            <div class="subcat-grid">
+                <a href="catalog.html" class="subcat-link">Классический детектив</a>
+                <a href="catalog.html" class="subcat-link">Психологический триллер</a>
+                <a href="catalog.html" class="subcat-link">Криминальный роман</a>
+                <a href="catalog.html" class="subcat-link">Шпионский роман</a>
+            </div>
+        </div>
+
+        <div class="catalog-subcats" id="subcat-classic">
+            <div class="subcat-title">Классическая литература</div>
+            <div class="subcat-grid">
+                <a href="catalog.html" class="subcat-link">Русская классика</a>
+                <a href="catalog.html" class="subcat-link">Зарубежная классика</a>
+                <a href="catalog.html" class="subcat-link">Поэзия</a>
+                <a href="catalog.html" class="subcat-link">Пьесы и драматургия</a>
+            </div>
+        </div>
+
+
+        <div class="catalog-subcats" id="subcat-manga">
+            <div class="subcat-title">Манга и комиксы</div>
+            <div class="subcat-grid">
+                <a href="catalog.html" class="subcat-link">Манхва</a>
+                <a href="catalog.html" class="subcat-link">Комиксы </a>
+                 <a href="catalog.html" class="subcat-link">Манга</a>
+                <a href="catalog.html" class="subcat-link">Авторские комиксы</a>
+                <a href="catalog.html" class="subcat-link">Графические романы</a>
+            </div>
+        </div>
+
+        <div class="catalog-subcats" id="subcat-children">
+            <div class="subcat-title">Детские книги</div>
+            <div class="subcat-grid">
+                <a href="catalog.html" class="subcat-link">Сказки</a>
+                <a href="catalog.html" class="subcat-link">Познавательное</a>
+                <a href="catalog.html" class="subcat-link">Энциклопедии</a>
+            </div>
+        </div>
+
+        <div class="catalog-subcats" id="subcat-psychology">
+            <div class="subcat-title">Психология и саморазвитие</div>
+            <div class="subcat-grid">
+                <a href="catalog.html" class="subcat-link">Психология отношений</a>
+                <a href="catalog.html" class="subcat-link">Мотивация</a>
+                <a href="catalog.html" class="subcat-link">Работа со стрессом</a>
+                <a href="catalog.html" class="subcat-link">Продуктивность</a>
+                <a href="catalog.html" class="subcat-link">Финансы</a>
+                <a href="catalog.html" class="subcat-link">Здоровье и тело</a>
+            </div>
+        </div>
+
+        <div class="catalog-subcats" id="subcat-history">
+            <div class="subcat-title">История и документальное</div>
+            <div class="subcat-grid">
+                <a href="catalog.html" class="subcat-link">История России</a>
+                <a href="catalog.html" class="subcat-link">Мировая история</a>
+                <a href="catalog.html" class="subcat-link">Военная история</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="container">
+
+    <!-- назад -->
+    <nav class="breadcrumb">
+        <a href="homepage.html">Главная</a>
+        <span>›</span>
+        <span id="pc-crumb">…</span>
+    </nav>
+
+    <!-- Рейтинг -->
+    <div class="rating-bar" id="pc-rating-wrap">
+        <span class="stars" id="pc-stars">★★★★★</span>
+        <span class="rating-count" id="pc-rating-num">—</span>
+        <span class="rating-votes" id="pc-rating-votes"></span>
+        <a href="#" class="share-link">Поделиться</a>
+    </div>
+
+   
+    <div class="product-layout" id="product-layout">
+
+      
+        <div class="gallery">
+            <div class="main-cover">
+                <img id="pc-cover" src="" alt="">
+            </div>
+        </div>
+
+        <div class="product-info">
+            <h1 class="book-title-main" id="pc-title">…</h1>
+            <a href="#" class="book-author-main" id="pc-author" onclick="return false"></a>
+
+            <p class="description" id="pc-desc"></p>
+
+            <table class="specs">
+                <tbody id="pc-specs"></tbody>
+            </table>
+
+            <button type="button" class="specs-more" id="pc-specs-more" style="display:none">Перейти к характеристикам</button>
+        </div>
+
+       
+        <div class="buy-block">
+            <div class="price-old" id="pc-price-old" style="display:none"></div>
+            <div class="price-new" id="pc-price-new">—</div>
+
+            <div class="btn-row">
+                <button type="button" class="btn-buy-main full" id="pc-buy">В корзину</button>
+                <button type="button" class="btn-bookmark" id="pc-fav" title="В избранное">♡</button>
+            </div>
+
+            <div class="in-stock" id="pc-stock">…</div>
+
+            <hr class="divider">
+
+            <button type="button" class="btn-pickup" id="pc-add-cart">Добавить в корзину</button>
+        </div>
+
+    </div>
+
+    <p id="pc-error" style="display:none;text-align:center;color:#c62828;padding:40px 16px"></p>
+
+    <div style="height: 60px;"></div>
+
+   
+    <section class="reviews-section" id="reviews">
+        <h2 class="reviews-heading">Отзывы покупателей</h2>
+
+        
+        <div class="review-form-wrap" id="reviewFormWrap">
+            <div class="review-form-title">Оставить отзыв</div>
+            <div class="star-rating" id="starRating">
+                <span class="star" data-v="1">★</span>
+                <span class="star" data-v="2">★</span>
+                <span class="star" data-v="3">★</span>
+                <span class="star" data-v="4">★</span>
+                <span class="star" data-v="5">★</span>
+            </div>
+            <input type="hidden" id="ratingValue" value="0">
+            <textarea id="reviewText" class="review-textarea" rows="4" placeholder="Поделитесь впечатлениями о книге..."></textarea>
+            <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
+                <button class="btn-review-submit" id="submitReview" onclick="submitReview()">Отправить отзыв</button>
+                <span id="reviewMsg" style="font-size:0.88rem;color:var(--green)"></span>
+            </div>
+            <p style="font-size:0.8rem;color:#aaa;margin-top:8px">Отзыв появится после проверки модератором</p>
+        </div>
+
+  
+        <div id="reviewsList" class="reviews-list">
+            <div style="color:#aaa;text-align:center;padding:32px 0">Загрузка отзывов...</div>
+        </div>
+    </section>
+
+    <div style="height: 60px;"></div>
+
+</div>
+<script src="api.js"></script>
+<script src="scriptcatalog.js"></script>
+<script src="product-card-page.js"></script>
+</body>
+</html>

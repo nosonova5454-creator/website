@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог — ЧитайСтрана</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="homepage.html" class="logo"><span>ЧИТАЙ</span><span>СТРАНА</span></a>
+            <form class="search-form" action="search.html" method="get">
+                <input type="search" name="q" class="search-input" placeholder="Найти книгу, автора…">
+            </form>
+            <div class="header-icons">
+                <a href="auth.html">Войти</a>
+                <a href="orders.html">Заказы</a>
+                <a href="mybooks.html">Мои книги</a>
+                <a href="cart.html">Корзина</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container" style="padding: 24px 0 56px;">
+    <nav class="breadcrumb">
+        <a href="homepage.html">Главная</a> <span>›</span> Каталог
+    </nav>
+    <div style="display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start">
+        <aside style="border:1px solid var(--border);border-radius:10px;padding:14px;background:#fff">
+            <h3 style="margin-bottom:10px">Категории</h3>
+            <div id="catalog-cats" style="display:grid;gap:8px"></div>
+        </aside>
+        <section>
+            <h1 class="orders-title" id="catalog-title">Каталог книг</h1>
+            <p id="catalog-meta" style="color:#666;margin-bottom:12px"></p>
+            <div class="books-grid" id="catalog-grid">
+                <p style="grid-column:1/-1;color:#aaa">Загрузка…</p>
+            </div>
+        </section>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-bottom">© 2026 ЧитайСтрана</div>
+    </div>
+</footer>
+
+<script src="api.js"></script>
+<script src="catalog-page.js"></script>
+</body>
+</html>

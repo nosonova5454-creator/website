@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои заказы — ЧитайСтрана</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="homepage.html" class="logo"><span>ЧИТАЙ</span><span>СТРАНА</span></a>
+
+       
+            <div class="catalog-wrap">
+                <button class="catalog-btn" id="catalogBtn" onclick="toggleCatalog()">
+                    <span class="cat-icon">☰</span> Каталог
+                </button>
+            </div>
+
+            <form class="search-form" action="search.html" method="get">
+                <input type="search" name="q" class="search-input" placeholder="Найти книгу, автора…">
+            </form>
+
+            <div class="header-icons">
+                <a href="auth.html">Войти</a>
+                <a href="orders.html">Заказы</a>
+                <a href="mybooks.html">Мои книги</a>
+                <a href="cart.html">Корзина</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="catalog-overlay" id="catalogOverlay" onclick="closeCatalog()"></div>
+
+<div class="catalog-dropdown" id="catalogDropdown">
+    <div class="catalog-menu-inner">
+        <div class="catalog-categories">
+            <div class="cat-item active" onmouseenter="showSubcat('romans')">
+                Романы и проза <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('fantasy')">
+                Фантастика и фэнтези <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('detective')">
+                Детективы и триллеры <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('classic')">
+                Классическая литература <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('manga')">
+                Манга и комиксы <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('children')">
+                Детские книги <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('psychology')">
+                Психология и саморазвитие <span class="cat-arrow">›</span>
+            </div>
+            <div class="cat-item" onmouseenter="showSubcat('history')">
+                История и документальное <span class="cat-arrow">›</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="homepage.html">Главная</a> <span>›</span> Мои заказы
+    </nav>
+
+    <div class="orders-layout">
+      
+        <nav class="profile-nav">
+            <a href="orders.html" class="active"><span class="nav-icon">📦</span> Покупки</a>
+            <a href="mybooks.html"><span class="nav-icon">❤️</span> Избранное</a>
+            <a href="auth.html"><span class="nav-icon">👤</span> Профиль</a>
+        </nav>
+
+  
+        <div class="orders-main">
+            <h1 class="orders-title">Мои покупки</h1>
+            <div id="ordersList">
+                <div style="color:#aaa;text-align:center;padding:60px 0">Загрузка заказов...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+          <div class="footer-block">
+                <span class="footer-block-title">ЧитайСтрана</span>
+                <p class="footer-desc">Книжный магазин с лучшими новинками и бестселлерами. Доставка по всей России.</p>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Навигация</span>
+                <a href="#">Новинки</a><a href="#">Популярное</a><a href="catalog.html">Каталог</a>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Контакты</span>
+                <a href="#">О нас</a><a href="#">Доставка и оплата</a><a href="#">Помощь</a>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Соцсети</span>
+                <a href="#">ВКонтакте</a><a href="#">Telegram</a><a href="#">YouTube</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2025 ЧитайСтрана. Все права защищены.</div>
+    </div>
+</footer>
+
+<script>
+
+window.skipAutoInit = true;
+</script>
+<script src="api.js"></script>
+<script src="scriptcatalog.js"></script>
+<script>
+
+const STATUS_LABELS = {
+    processing: { text: 'Обрабатывается', cls: 'status-processing', icon: '⏳' },
+    confirmed:  { text: 'Подтверждён',    cls: 'status-confirmed',  icon: '✅' },
+    shipping:   { text: 'В доставке',     cls: 'status-transit',    icon: '🚚' },
+    delivered:  { text: 'Доставлен',      cls: 'status-delivered',  icon: '📦' },
+    cancelled:  { text: 'Отменён',        cls: 'status-cancelled',  icon: '❌' },
+};
+
+
+function declOfNum(number, titles) {
+    const cases = [2, 0, 1, 1, 1, 2];
+    const n = Math.abs(number);
+    return titles[(n % 100 > 4 && n % 100 < 20) ? 2 : cases[(n % 10 < 5) ? n % 10 : 5]];
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+
+async function loadOrders() {
+    const list = document.getElementById('ordersList');
+    if (!list) return;
+    
+    
+    if (!Auth.isLoggedIn()) {
+        list.innerHTML = `
+            <div style="text-align:center;padding:60px 0">
+                <p style="color:#aaa;margin-bottom:16px">Войдите, чтобы увидеть заказы</p>
+                <a href="auth.html" class="btn-go">Войти</a>
+            </div>`;
+        return;
+    }
+    
+    try {
+        
+        const orders = await Orders.getAll();
+        
+        if (!orders || !orders.length) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <h2>Заказов пока нет</h2>
+                    <p>Самое время выбрать что-нибудь интересное</p>
+                    <a href="catalog.html" class="btn-go">Перейти в каталог</a>
+                </div>`;
+            return;
+        }
+        
+        let ordersHtml = '';
+        
+        for (const order of orders) {
+            const status = STATUS_LABELS[order.status] || { text: order.status, cls: 'status-processing', icon: '📋' };
+            
+            let items = [];
+            let itemCount = 0;
+            
+            try {
+                const orderDetails = await Orders.getItems(order.id);
+                items = orderDetails.items || [];
+                itemCount = orderDetails.item_count || items.length;
+            } catch (err) {
+                console.error(`Ошибка загрузки товаров заказа ${order.id}:`, err);
+             
+                if (order.items) {
+                    try {
+                        items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+                        itemCount = items.length;
+                    } catch(e) {}
+                }
+            }
+            
+          
+            ordersHtml += `
+                <div class="order-card">
+                    <div class="order-head">
+                        <div>
+                            <div class="order-num">Заказ № ${order.id}</div>
+                            <div class="order-date">
+                                ${new Date(order.created_at).toLocaleDateString('ru')} · 
+                                ${itemCount} ${declOfNum(itemCount, ['товар', 'товара', 'товаров'])}
+                            </div>
+                        </div>
+                        <span class="order-status ${status.cls}">${status.icon} ${status.text}</span>
+                    </div>
+
+                    ${order.tracking_number ? `
+                    <div class="order-tracking">
+                        🚚 Трек-номер: <strong>${escapeHtml(order.tracking_number)}</strong>
+                    </div>` : ''}
+
+                    ${order.delivery_note ? `
+                    <div class="order-delivery-note">
+                        📍 ${escapeHtml(order.delivery_note)}
+                    </div>` : ''}
+
+                    <div class="order-books">
+                        ${items.slice(0, 5).map(item => {
+                            if (item.cover_url) {
+                                return `<img class="order-book-thumb" src="${escapeHtml(item.cover_url)}" alt="${escapeHtml(item.title || '')}" title="${escapeHtml(item.title || '')}">`;
+                            }
+                            return `<div class="order-book-thumb" style="background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#999;text-align:center;padding:4px">${escapeHtml(item.title || 'Книга')}</div>`;
+                        }).join('')}
+                        ${items.length > 5 ? `<div class="order-book-thumb" style="background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#666">+${items.length - 5}</div>` : ''}
+                    </div>
+
+                    <div style="display:grid;gap:8px;margin-top:12px">
+                        ${items.map(item => `
+                            <div style="font-size:0.9rem;color:#444;display:flex;justify-content:space-between;align-items:center">
+                                <span>
+                                    <strong>${escapeHtml(item.title || `Книга #${item.book_id}`)}</strong>
+                                    ${item.author ? `<br><span style="font-size:0.8rem;color:#888">${escapeHtml(item.author)}</span>` : ''}
+                                </span>
+                                <span style="white-space:nowrap">
+                                    ${Number(item.quantity) || 1} шт. × ${Number(item.price || 0).toLocaleString('ru-RU')} ₽
+                                </span>
+                            </div>
+                        `).join('')}
+                        ${items.length === 0 ? '<div style="font-size:0.9rem;color:#888">Информация о товарах временно недоступна</div>' : ''}
+                    </div>
+
+                    <div class="order-footer">
+                        <span class="order-total">${Number(order.total_amount).toLocaleString('ru-RU')} ₽</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        list.innerHTML = ordersHtml;
+        
+    } catch (err) {
+        console.error('Ошибка загрузки заказов:', err);
+        list.innerHTML = `<div style="color:#e74c3c;text-align:center;padding:40px 0">Ошибка загрузки заказов: ${escapeHtml(err.message)}</div>`;
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+   
+    await refreshSession();
+   
+    initHeader();
+  
+    await loadOrders();
+});
+</script>
+</body>
+</html>
