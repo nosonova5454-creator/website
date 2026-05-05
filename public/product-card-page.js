@@ -81,7 +81,7 @@
 
         const stock = book.stock != null ? Number(book.stock) : 0;
         document.getElementById('pc-stock').textContent =
-            stock > 0 ? `✅ В наличии (${stock} шт.)` : '❌ Нет в наличии';
+            stock > 0 ? ` В наличии (${stock} шт.)` : ' Нет в наличии';
 
         async function addToCart() {
             if (!Auth.isLoggedIn()) {

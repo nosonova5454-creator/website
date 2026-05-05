@@ -1,6 +1,6 @@
 
 
-// Инициализация
+
 document.addEventListener('DOMContentLoaded', async () => {
     if (typeof refreshSession === 'function') await refreshSession();
     if (!Auth.isLoggedIn() || !Auth.isAdmin()) {
@@ -13,23 +13,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nameEl = document.getElementById('adminName');
     if (nameEl) nameEl.textContent = `👑 ${user.first_name || user.login}`;
 
-    // Инициализация вкладок 
+    
     initTabs();
     
-    // Загружаем справочники
+
     await loadDictionaries();
     
-    // Настраиваем фильтры
+   
     setupFilters();
     
-    // Настраиваем формы
+  
     setupForms();
 
-    // Загружаем все данные
+
     await Promise.all([loadProducts(), loadOrders(), loadUsers(), loadReviews()]);
 });
 
-// Кнопка выхода
+
 function logout() {
     Auth.logout();
 }
@@ -79,7 +79,7 @@ function initTabs() {
 }
 
 
-// Справочники (жанры, издательства, типы обложек)
+
 
 let GENRES = [], PUBLISHERS = [], COVER_TYPES = [];
 
@@ -115,7 +115,7 @@ function fillSelect(elId, items, labelKey) {
 }
 
 
-// Фильтр
+
 
 function setupFilters() {
     const bind = (id, fn) => {
@@ -145,7 +145,7 @@ function setupForms() {
     if (userForm) userForm.addEventListener('submit', saveUser);
 }
 
-// товарыы
+
 
 async function loadProducts() {
     const search   = document.getElementById('productSearch')?.value || '';
@@ -235,7 +235,7 @@ async function deleteProduct(id) {
 }
 
 
-// Заказы
+
 
 const STATUS_LABELS = {
     processing: '⏳ Обрабатывается',
@@ -299,7 +299,7 @@ async function saveOrder(e) {
     }
 }
 
-// Пользователь
+
 
 async function loadUsers() {
     const search = document.getElementById('userSearch')?.value || '';
@@ -364,7 +364,7 @@ async function deleteUser(id) {
 }
 
 
-// Отзыв
+
 
 async function loadReviews() {
     const status = document.getElementById('reviewStatusFilter')?.value || '';
@@ -425,7 +425,7 @@ async function deleteReview(id) {
 }
 
 
-// окна редактирования админ
+
 
 function openProductModal(id) {
     const form = document.getElementById('productForm');

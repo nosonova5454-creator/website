@@ -1,14 +1,10 @@
--- ============================================================
---  ЧитайСтрана — схема базы данных PostgreSQL
---  Версия 1.0
--- ============================================================
 
--- Включаем расширение для UUID
+
+
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- ============================================================
--- СПРАВОЧНЫЕ ТАБЛИЦЫ
--- ============================================================
+
+
 
 CREATE TABLE genres (
     id          SERIAL PRIMARY KEY,
@@ -30,16 +26,14 @@ CREATE TABLE literature_types (
     name        VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Теги книг (многие-ко-многим через book_tags)
+
 CREATE TABLE tags (
     id          SERIAL PRIMARY KEY,
     name        VARCHAR(100) NOT NULL,
     slug        VARCHAR(50)  NOT NULL UNIQUE
 );
 
--- ============================================================
--- ПОЛЬЗОВАТЕЛИ
--- ============================================================
+
 
 CREATE TABLE users (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -56,7 +50,7 @@ CREATE TABLE users (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Триггер автообновления updated_at
+
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
@@ -66,9 +60,7 @@ CREATE TRIGGER trg_users_updated
     BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
--- ============================================================
--- КНИГИ
--- ============================================================
+
 
 CREATE TABLE books (
     id                  SERIAL PRIMARY KEY,
@@ -109,9 +101,7 @@ CREATE TABLE book_tags (
 
 CREATE INDEX idx_book_tags_tag ON book_tags(tag_id);
 
--- ============================================================
--- ЗАКАЗЫ
--- ============================================================
+
 
 CREATE TABLE orders (
     id              SERIAL PRIMARY KEY,
@@ -135,7 +125,7 @@ CREATE TRIGGER trg_orders_updated
 CREATE INDEX idx_orders_user    ON orders(user_id);
 CREATE INDEX idx_orders_status  ON orders(status);
 
--- Состав заказа
+
 CREATE TABLE order_items (
     id              SERIAL PRIMARY KEY,
     order_id        INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -147,9 +137,7 @@ CREATE TABLE order_items (
 CREATE INDEX idx_order_items_order ON order_items(order_id);
 CREATE INDEX idx_order_items_book  ON order_items(book_id);
 
--- ============================================================
--- КОРЗИНА
--- ============================================================
+
 
 CREATE TABLE cart (
     id          SERIAL PRIMARY KEY,
@@ -162,9 +150,7 @@ CREATE TABLE cart (
 
 CREATE INDEX idx_cart_user ON cart(user_id);
 
--- ============================================================
--- ИЗБРАННОЕ
--- ============================================================
+
 
 CREATE TABLE favorites (
     id          SERIAL PRIMARY KEY,
@@ -176,9 +162,7 @@ CREATE TABLE favorites (
 
 CREATE INDEX idx_favorites_user ON favorites(user_id);
 
--- ============================================================
--- ОТЗЫВЫ
--- ============================================================
+
 
 CREATE TABLE reviews (
     id          SERIAL PRIMARY KEY,
@@ -189,15 +173,13 @@ CREATE TABLE reviews (
     status      VARCHAR(20) NOT NULL DEFAULT 'pending'
                     CHECK (status IN ('pending','approved','hidden')),
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE (user_id, book_id)   -- один отзыв на книгу от пользователя
+    UNIQUE (user_id, book_id)   
 );
 
 CREATE INDEX idx_reviews_book   ON reviews(book_id);
 CREATE INDEX idx_reviews_status ON reviews(status);
 
--- ============================================================
--- ИСТОРИЯ ПРОСМОТРОВ
--- ============================================================
+
 
 CREATE TABLE view_history (
     id          SERIAL PRIMARY KEY,
@@ -208,9 +190,7 @@ CREATE TABLE view_history (
 
 CREATE INDEX idx_history_user ON view_history(user_id);
 
--- ============================================================
--- ПРОМОКОДЫ
--- ============================================================
+
 
 CREATE TABLE promo_codes (
     id              SERIAL PRIMARY KEY,
@@ -222,9 +202,7 @@ CREATE TABLE promo_codes (
     is_active       BOOLEAN NOT NULL DEFAULT TRUE
 );
 
--- ============================================================
--- НАЧАЛЬНЫЕ ДАННЫЕ (справочники)
--- ============================================================
+
 
 INSERT INTO genres (name) VALUES
     ('Романы и проза'),
@@ -260,11 +238,11 @@ INSERT INTO tags (name, slug) VALUES
     ('Новинка', 'new'),
     ('Популярное', 'popular');
 
--- Тестовый администратор (логин admin / пароль admin123)
+-- (пароль admin123)
 INSERT INTO users (login, email, password_hash, first_name, last_name, role) VALUES
     ('admin', 'admin@chitai-strana.ru', '$2b$10$1.KSBdwrjJacRImUDpWpleJVH9Yzdhh9LBteT2exwt3iuow4udzsG', 'Администратор', '', 'admin');
 
--- Тестовые книги
+
 INSERT INTO books (title, author, genre_id, publisher_id, cover_type_id, year_published, pages, price, old_price, stock, isbn, cover_url, description) VALUES
     (
         'Лишний в его игре',
@@ -299,11 +277,10 @@ INSERT INTO book_tags (book_id, tag_id) VALUES
     (2, 1),
     (3, 2);
 
--- ============================================================
--- ПОЛЕЗНЫЕ ПРЕДСТАВЛЕНИЯ (VIEWS)
--- ============================================================
 
--- Книга с полными данными (для каталога)
+
+
+
 CREATE OR REPLACE VIEW v_books_full AS
 SELECT
     b.id,
@@ -334,7 +311,7 @@ LEFT JOIN literature_types lt ON b.literature_type_id = lt.id
 LEFT JOIN reviews         r  ON b.id = r.book_id AND r.status = 'approved'
 GROUP BY b.id, g.name, p.name, ct.name, lt.name;
 
--- Заказ с деталями
+
 CREATE OR REPLACE VIEW v_orders_full AS
 SELECT
     o.id,

@@ -1,10 +1,4 @@
-#!/usr/bin/env node
-/**
- * Создаёт или обновляет пользователя admin с паролем admin123
- * в базе из .env (те же параметры, что у server.js).
- *
- * Запуск: npm run reset-admin
- */
+
 require('dotenv').config();
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');

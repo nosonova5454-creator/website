@@ -35,7 +35,7 @@ body {
 }
 
 
-/*  Шапка */
+/*  шапка */
 
 header {
   background: white;
@@ -995,7 +995,7 @@ input:focus {
 }
 
 
-/* Ценовой слайдер */
+
 .price-range {
   display: flex;
   gap: 8px;
@@ -1103,7 +1103,7 @@ input:focus {
   color: white;
 }
 
-/* Адаптив каталога */
+
 @media (max-width: 900px) {
   .catalog-layout {
     grid-template-columns: 1fr;
@@ -1114,7 +1114,7 @@ input:focus {
 }
 
 
-/* Корзина  */
+
 
 .cart-layout {
   display: grid;
@@ -1256,7 +1256,7 @@ input:focus {
 
 .cart-remove:hover { color: var(--red); }
 
-/* итого */
+
 .cart-summary {
   background: white;
   border-radius: 12px;
@@ -1357,7 +1357,7 @@ input:focus {
 .cart-empty h2 { font-size: 1.4rem; margin-bottom: 8px; color: #333; }
 .cart-empty p { font-size: 0.95rem; margin-bottom: 24px; }
 
-/* Адаптив корзины */
+
 @media (max-width: 860px) {
   .cart-layout {
     grid-template-columns: 1fr;
@@ -1368,7 +1368,7 @@ input:focus {
 }
 
 
-/* Заказы  */
+
 
 .orders-layout {
   display: grid;
@@ -1378,7 +1378,7 @@ input:focus {
   padding: 24px 0 60px;
 }
 
-/* Боковое меню профиля */
+
 .profile-nav {
   background: white;
   border-radius: 12px;
@@ -1414,7 +1414,7 @@ input:focus {
 
 .profile-nav .nav-icon { font-size: 1.1rem; }
 
-/* Заказы */
+
 .orders-main {}
 
 .orders-title {
@@ -1527,7 +1527,7 @@ input:focus {
 
 .btn-sm-primary:hover { background: var(--primary-dark); }
 
-/* Адаптив заказов */
+
 @media (max-width: 768px) {
   .orders-layout {
     grid-template-columns: 1fr;
@@ -1547,7 +1547,7 @@ input:focus {
 }
 
 
-/* Мои книги / Избранное (mybooks.html) */
+
 
 .mybooks-tabs {
   display: flex;
@@ -1588,7 +1588,7 @@ input:focus {
   gap: 20px 16px;
 }
 
-/* Карточка в избранном — с кнопкой удалить */
+
 .wishlist-card {
   position: relative;
 }
@@ -1618,7 +1618,7 @@ input:focus {
   color: var(--red);
 }
 
-/* Пустое состояние */
+
 .empty-state {
   text-align: center;
   padding: 80px 20px;
@@ -1644,7 +1644,7 @@ input:focus {
 .btn-go:hover { background: var(--primary-dark); }
 
 
-/* Страница поиска  */
+
 
 .search-page-header {
   padding: 24px 0 20px;
@@ -1667,7 +1667,7 @@ input:focus {
 
 
 
-/* Выпадающее меню каталога */
+
 
 .catalog-wrap {
     position: relative;
@@ -1767,7 +1767,7 @@ input:focus {
 }
 
 
-/* Страница входа (3.html)*/
+
 
 .header-auth {
     display: flex;
@@ -1824,9 +1824,9 @@ input:focus {
 .footer-auth a:hover {
     color: var(--primary);
 }
-/* АДМИН-ПАНЕЛЬ */
 
-/* Вкладки админки */
+
+
 .admin-tabs {
     display: flex;
     gap: 8px;
@@ -1858,7 +1858,7 @@ input:focus {
     border-bottom-color: var(--primary);
 }
 
-/* Панели вкладок */
+
 .admin-tab-panel {
     display: none;
     background: white;
@@ -1871,7 +1871,7 @@ input:focus {
     display: block;
 }
 
-/* Заголовок и фильтры */
+
 .admin-header {
     display: flex;
     justify-content: space-between;
@@ -1897,7 +1897,7 @@ input:focus {
     background: white;
 }
 
-/* Таблицы */
+
 .admin-table-wrap {
     overflow-x: auto;
 }
@@ -1926,7 +1926,7 @@ input:focus {
     background: #fafafa;
 }
 
-/* Кнопки */
+
 .btn-primary {
     background: var(--primary);
     color: white;
@@ -1976,7 +1976,7 @@ input:focus {
     color: var(--red);
 }
 
-/* Статусы */
+
 .status-badge {
     display: inline-block;
     padding: 4px 12px;
@@ -2001,7 +2001,7 @@ input:focus {
 .role-admin { background: #ffebee; color: #c62828; }
 .role-user { background: #e3f2fd; color: #1565c0; }
 
-/* Модальные окна */
+
 .modal {
     display: none;
     position: fixed;
@@ -2064,7 +2064,7 @@ input:focus {
     border-top: 1px solid var(--border);
 }
 
-/* Формы внутри модалок */
+
 .modal-content .form-group {
     margin-bottom: 16px;
 }
@@ -2095,7 +2095,7 @@ input:focus {
     border-color: var(--primary);
 }
 
-/* Отзывы на странице товара */
+
 .reviews-section {
     margin-top: 48px;
     padding-top: 32px;
@@ -2182,7 +2182,7 @@ input:focus {
     color: #ffb400;
 }
 
-/* Адаптив для админки */
+
 @media (max-width: 768px) {
     .admin-tabs {
         gap: 4px;
@@ -2209,7 +2209,7 @@ input:focus {
     }
 }
 
-/* Статусы заказов */
+
 
 .order-status {
   padding: 4px 12px;
@@ -2243,7 +2243,7 @@ input:focus {
 }
 
 
-/* отзывы */
+
 
 .reviews-section {
   margin-top: 48px;

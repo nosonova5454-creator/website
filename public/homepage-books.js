@@ -1,4 +1,4 @@
-// Новинки» и Популярное
+
 (function () {
     const favoriteIds = new Set();
 

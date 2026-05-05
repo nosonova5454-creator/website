@@ -20,7 +20,7 @@ async function apiFetch(path, options = {}) {
 }
 
 
-// авторизация
+
 
 const Auth = {
     async login(login, password) {
@@ -68,7 +68,7 @@ const Auth = {
 };
 
 
-// Книги
+
 
 const Books = {
     getAll: (params = {}) => {
@@ -84,7 +84,7 @@ const Books = {
 
 
 
-// Заказы
+
 
 const Orders = {
     getAll: (params = {}) => {
@@ -97,7 +97,7 @@ const Orders = {
 };
 
 
-// Корзина
+
 
 const Cart = {
     get: () => apiFetch('/cart'),
@@ -113,7 +113,7 @@ const Cart = {
 };
 
 
-// Избранное
+
 
 const Favorites = {
     get: () => apiFetch('/favorites'),

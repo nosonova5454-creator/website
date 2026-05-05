@@ -1,6 +1,4 @@
-// ============================================================
-//  ЧитайСтрана — Backend API (Node.js + Express + PostgreSQL)
-// ============================================================
+
 
 require('dotenv').config();
 const express = require('express');
@@ -12,9 +10,9 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ──────────────────────────────────────────────
-// Подключение к PostgreSQL
-// ──────────────────────────────────────────────
+
+// Подключение  PostgreSQL
+
 const pool = new Pool({
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 5432,
@@ -24,12 +22,12 @@ const pool = new Pool({
 });
 
 pool.connect()
-    .then(() => console.log('✅ PostgreSQL подключён'))
-    .catch(err => console.error('❌ Ошибка подключения к БД:', err));
+    .then(() => console.log(' PostgreSQL подключён'))
+    .catch(err => console.error('Ошибка подключения к БД:', err));
 
-// ──────────────────────────────────────────────
-// Middleware
-// ──────────────────────────────────────────────
+
+
+
 app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
 app.use(express.json());
 app.get('/', (_req, res) => res.redirect('/homepage.html'));
@@ -60,9 +58,8 @@ function adminMiddleware(req, res, next) {
     });
 }
 
-// ──────────────────────────────────────────────
-// АВТОРИЗАЦИЯ
-// ──────────────────────────────────────────────
+
+// автррозаци я
 
 app.post('/api/auth/register', async (req, res) => {
     try {
@@ -136,9 +133,8 @@ app.get('/api/auth/me', authMiddleware, async (req, res) => {
     }
 });
 
-// ──────────────────────────────────────────────
-// КНИГИ
-// ──────────────────────────────────────────────
+
+// книги
 
 app.get('/api/books', async (req, res) => {
     try {
@@ -313,9 +309,8 @@ app.delete('/api/books/:id', adminMiddleware, async (req, res) => {
     }
 });
 
-// ──────────────────────────────────────────────
-// ЗАКАЗЫ
-// ──────────────────────────────────────────────
+
+// заказы
 
 app.get('/api/orders', authMiddleware, async (req, res) => {
     try {
@@ -453,9 +448,8 @@ app.patch('/api/orders/:id', adminMiddleware, async (req, res) => {
     }
 });
 
-// ──────────────────────────────────────────────
-// КОРЗИНА
-// ──────────────────────────────────────────────
+
+// Корзина
 
 app.get('/api/cart', authMiddleware, async (req, res) => {
     try {
@@ -506,9 +500,7 @@ app.delete('/api/cart/:book_id', authMiddleware, async (req, res) => {
     }
 });
 
-// ──────────────────────────────────────────────
-// ИЗБРАННОЕ
-// ──────────────────────────────────────────────
+// Избраннир
 
 app.get('/api/favorites', authMiddleware, async (req, res) => {
     try {
@@ -545,9 +537,9 @@ app.delete('/api/favorites/:book_id', authMiddleware, async (req, res) => {
     }
 });
 
-// ──────────────────────────────────────────────
-// ОТЗЫВЫ
-// ──────────────────────────────────────────────
+
+// Отзывы
+
 
 app.get('/api/reviews', async (req, res) => {
     try {
@@ -626,9 +618,7 @@ app.delete('/api/reviews/:id', adminMiddleware, async (req, res) => {
     }
 });
 
-// ──────────────────────────────────────────────
-// ПОЛЬЗОВАТЕЛИ (только админ)
-// ──────────────────────────────────────────────
+// админ
 
 app.get('/api/users', adminMiddleware, async (req, res) => {
     try {
@@ -694,17 +684,13 @@ app.delete('/api/users/:id', adminMiddleware, async (req, res) => {
     }
 });
 
-// ──────────────────────────────────────────────
-// СПРАВОЧНИКИ
-// ──────────────────────────────────────────────
+
 
 app.get('/api/genres', async (_, res) => res.json((await pool.query('SELECT * FROM genres ORDER BY name')).rows));
 app.get('/api/publishers', async (_, res) => res.json((await pool.query('SELECT * FROM publishers ORDER BY name')).rows));
 app.get('/api/cover-types', async (_, res) => res.json((await pool.query('SELECT * FROM cover_types ORDER BY name')).rows));
 
-// ──────────────────────────────────────────────
-// ИСТОРИЯ ПРОСМОТРОВ
-// ──────────────────────────────────────────────
+// история просмотров
 
 app.post('/api/history', authMiddleware, async (req, res) => {
     try {
@@ -734,9 +720,7 @@ app.get('/api/history', authMiddleware, async (req, res) => {
     }
 });
 
-// ──────────────────────────────────────────────
-// ПРОМОКОДЫ
-// ──────────────────────────────────────────────
+// промо
 
 app.get('/api/promo', adminMiddleware, async (_, res) => {
     try {
@@ -757,8 +741,8 @@ app.post('/api/promo/check', async (req, res) => {
     }
 });
 
-// ──────────────────────────────────────────────
-// Запуск сервера
-// ──────────────────────────────────────────────
 
-app.listen(PORT, () => console.log(`🚀 Сервер запущен: http://localhost:${PORT}`));
+// Запуск сервера
+
+
+app.listen(PORT, () => console.log(` Сервер запущен: http://localhost:${PORT}`));

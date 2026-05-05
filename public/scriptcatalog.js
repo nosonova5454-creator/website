@@ -1,5 +1,5 @@
 
-    //меню каталога 
+
     const btn      = document.getElementById('catalogBtn');
     const dropdown = document.getElementById('catalogDropdown');
     const overlay  = document.getElementById('catalogOverlay');
@@ -63,7 +63,7 @@
         item.addEventListener('mouseenter', e => showSubcat(catId, e));
     });
 
-    //избранное 
+  
     document.querySelectorAll('.favorite-btn').forEach(btn => {
         btn.addEventListener('click', e => {
             e.preventDefault();
