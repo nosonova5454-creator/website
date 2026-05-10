@@ -10,6 +10,9 @@
 
     async function render() {
         const root = document.getElementById('cart-items-root');
+        const layout = document.querySelector('.cart-layout');
+        const header = document.querySelector('.cart-header');
+        const summary = document.querySelector('.cart-summary');
         const titleCount = document.getElementById('cart-title-count');
         const sumRow = document.getElementById('cart-summary-items');
         const totalRow = document.getElementById('cart-total-pay');
@@ -17,16 +20,23 @@
         if (!root) return;
 
         if (!Auth.isLoggedIn()) {
+            if (layout) layout.classList.add('auth-only');
+            if (header) header.style.display = 'none';
+            if (summary) summary.style.display = 'none';
             root.innerHTML = `
-                <div style="text-align:center;padding:48px 16px">
-                    <p style="color:#666;margin-bottom:16px">Войдите, чтобы увидеть корзину</p>
-                    <a href="auth.html" class="btn-checkout" style="display:inline-block;text-decoration:none">Войти</a>
+                <div class="auth-required-message">
+                    <p>Войдите, чтобы увидеть заказы</p>
+                    <a href="auth.html" class="btn-go">Войти</a>
                 </div>`;
             if (titleCount) titleCount.textContent = '';
             if (sumRow) sumRow.innerHTML = '';
             if (totalRow) totalRow.textContent = '—';
             return;
         }
+
+        if (layout) layout.classList.remove('auth-only');
+        if (header) header.style.display = '';
+        if (summary) summary.style.display = '';
 
         root.innerHTML = '<p style="color:#aaa">Загрузка…</p>';
         let rows;

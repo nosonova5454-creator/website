@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль — ЧитайСтрана</title>
+    <link rel="stylesheet" href="css/styles.css">
+    
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="homepage.html" class="logo"><span>ЧИТАЙ</span><span>СТРАНА</span></a>
+            <div class="catalog-wrap">
+                <button class="catalog-btn" id="catalogBtn" onclick="toggleCatalog()">
+                    <span class="cat-icon">☰</span> Каталог
+                </button>
+            </div>
+            <form class="search-form" action="search.html" method="get">
+                <input type="search" name="q" class="search-input" placeholder="Найти книгу, автора…">
+            </form>
+            <div class="header-icons">
+               
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="catalog-overlay" id="catalogOverlay" onclick="closeCatalog()"></div>
+<div class="catalog-dropdown" id="catalogDropdown">
+    <div class="catalog-menu-inner">
+        <div class="catalog-categories">
+            <div class="cat-item" onmouseenter="showSubcat('romans')">Романы и проза <span class="cat-arrow">›</span></div>
+            <div class="cat-item" onmouseenter="showSubcat('fantasy')">Фантастика и фэнтези <span class="cat-arrow">›</span></div>
+            <div class="cat-item" onmouseenter="showSubcat('detective')">Детективы и триллеры <span class="cat-arrow">›</span></div>
+            <div class="cat-item" onmouseenter="showSubcat('classic')">Классическая литература <span class="cat-arrow">›</span></div>
+            <div class="cat-item" onmouseenter="showSubcat('manga')">Манга и комиксы <span class="cat-arrow">›</span></div>
+            <div class="cat-item" onmouseenter="showSubcat('children')">Детские книги <span class="cat-arrow">›</span></div>
+            <div class="cat-item" onmouseenter="showSubcat('psychology')">Психология и саморазвитие <span class="cat-arrow">›</span></div>
+            <div class="cat-item" onmouseenter="showSubcat('history')">История и документальное <span class="cat-arrow">›</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="container page-main">
+    <nav class="breadcrumb">
+        <a href="homepage.html">Главная</a> <span>›</span> Профиль
+    </nav>
+
+    <div class="orders-layout">
+
+        <!-- Боковое меню -->
+        <nav class="profile-nav">
+            <a href="orders.html"><span class="nav-icon">📦</span> Покупки</a>
+            <a href="mybooks.html"><span class="nav-icon">❤️</span> Избранное</a>
+            <a href="profile.html" class="active"><span class="nav-icon">👤</span> Профиль</a>
+        </nav>
+
+        <!-- Основной контент -->
+        <div id="profile-root">
+            <p style="color:#aaa;padding:40px 0">Загрузка…</p>
+        </div>
+
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-block">
+                <span class="footer-block-title">ЧитайСтрана</span>
+                <p class="footer-desc">Книжный магазин с лучшими новинками и бестселлерами.</p>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Навигация</span>
+                <a href="#">Новинки</a><a href="#">Популярное</a><a href="catalog.html">Каталог</a>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Контакты</span>
+                <a href="#">О нас</a><a href="#">Доставка и оплата</a><a href="#">Помощь</a>
+            </div>
+            <div class="footer-block">
+                <span class="footer-block-title">Соцсети</span>
+                <a href="#">ВКонтакте</a><a href="#">Telegram</a><a href="#">YouTube</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026 ЧитайСтрана. Все права защищены.</div>
+    </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/scriptcatalog.js"></script>
+<script>
+(async function () {
+    const root = document.getElementById('profile-root');
+
+    if (!Auth.isLoggedIn()) {
+        root.innerHTML = `
+            <div class="auth-required-message">
+                <p>Войдите, чтобы увидеть заказы</p>
+                <a href="auth.html" class="btn-go">Войти</a>
+            </div>`;
+        return;
+    }
+
+    // ── Загрузка профиля ──────────────────────────────────────
+    let profile;
+    try {
+        profile = await apiFetch('/profile');
+    } catch (e) {
+        root.innerHTML = `<p style="color:#c62828;padding:40px 0">${e.message}</p>`;
+        return;
+    }
+
+    render(profile);
+
+    // ── Рендер страницы ───────────────────────────────────────
+    function render(p) {
+        root.innerHTML = `
+            <h1 class="orders-title">Мой профиль</h1>
+
+            <!-- Личные данные -->
+            <div class="profile-section">
+                <h2>👤 Личные данные</h2>
+                <div class="profile-grid">
+                    <div class="form-group">
+                        <label>Имя</label>
+                        <input type="text" id="f-first-name" value="${esc(p.first_name || '')}" placeholder="Иван">
+                    </div>
+                    <div class="form-group">
+                        <label>Фамилия</label>
+                        <input type="text" id="f-last-name" value="${esc(p.last_name || '')}" placeholder="Иванов">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="f-email" value="${esc(p.email || '')}" placeholder="example@mail.ru">
+                    </div>
+                    <div class="form-group">
+                        <label>Телефон</label>
+                        <input type="tel" id="f-phone" value="${esc(p.phone || '')}" placeholder="+7 (999) 000-00-00">
+                    </div>
+                    <div class="form-group">
+                        <label>Логин</label>
+                        <input type="text" value="${esc(p.login || '')}" readonly title="Логин изменить нельзя">
+                    </div>
+                </div>
+                <button class="btn-save" id="btn-save-profile">Сохранить</button>
+                <div class="profile-msg" id="msg-profile"></div>
+            </div>
+
+            <!-- Telegram -->
+            <div class="profile-section">
+                <h2>✈️ Уведомления в Telegram</h2>
+                <div class="tg-block" id="tg-block">
+                    ${p.telegram_linked
+                        ? `<div class="tg-status linked"><span class="tg-dot on"></span>Telegram привязан</div>
+                           <button class="btn-tg-unlink" id="btn-tg-unlink">Отвязать</button>`
+                        : `<div class="tg-status unlinked"><span class="tg-dot off"></span>Telegram не привязан</div>
+                           <button class="btn-tg-link" id="btn-tg-get-link">Привязать Telegram</button>`
+                    }
+                </div>
+                <div class="tg-steps" id="tg-steps"></div>
+                <p class="tg-hint">После привязки вы будете получать сообщения о смене статуса каждого заказа.</p>
+                <div class="profile-msg" id="msg-tg"></div>
+            </div>
+        `;
+
+        // ── Сохранение профиля ────────────────────────────────
+        document.getElementById('btn-save-profile').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-save-profile');
+            const msg = document.getElementById('msg-profile');
+            btn.disabled = true;
+            msg.className = 'profile-msg';
+            msg.textContent = '';
+            try {
+                const updated = await apiFetch('/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        first_name: document.getElementById('f-first-name').value.trim(),
+                        last_name:  document.getElementById('f-last-name').value.trim(),
+                        email:      document.getElementById('f-email').value.trim(),
+                        phone:      document.getElementById('f-phone').value.trim(),
+                    })
+                });
+                // Обновляем localStorage
+                const stored = Auth.getUser();
+                if (stored) localStorage.setItem('user', JSON.stringify({ ...stored, ...updated }));
+                msg.className = 'profile-msg ok';
+                msg.textContent = '✓ Данные сохранены';
+            } catch (e) {
+                msg.className = 'profile-msg err';
+                msg.textContent = e.message;
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // ── Привязка Telegram ─────────────────────────────────
+        const btnLink = document.getElementById('btn-tg-get-link');
+        if (btnLink) {
+            btnLink.addEventListener('click', async () => {
+                const steps = document.getElementById('tg-steps');
+                const msg   = document.getElementById('msg-tg');
+                btnLink.disabled = true;
+                btnLink.textContent = 'Генерация ссылки…';
+                try {
+                    const data = await apiFetch('/profile/telegram-token', { method: 'POST' });
+                    steps.innerHTML = `
+                        <strong>Как привязать:</strong>
+                        <ol>
+                            <li>Нажмите кнопку ниже — откроется Telegram</li>
+                            <li>Нажмите <b>«Старт»</b> или <b>«Start»</b> в чате с ботом</li>
+                            <li>Бот подтвердит привязку — обновите эту страницу</li>
+                        </ol>
+                        <a class="tg-link-url" href="${esc(data.url)}" target="_blank">
+                            ✈️ Открыть бота в Telegram
+                        </a>
+                        <p style="font-size:0.8rem;color:#666;margin-top:8px">Ссылка действительна 30 минут</p>
+                    `;
+                    steps.classList.add('show');
+                    btnLink.textContent = 'Обновить ссылку';
+                    btnLink.disabled = false;
+                } catch (e) {
+                    msg.className = 'profile-msg err';
+                    msg.textContent = e.message;
+                    btnLink.textContent = 'Привязать Telegram';
+                    btnLink.disabled = false;
+                }
+            });
+        }
+
+        // ── Отвязка Telegram ──────────────────────────────────
+        const btnUnlink = document.getElementById('btn-tg-unlink');
+        if (btnUnlink) {
+            btnUnlink.addEventListener('click', async () => {
+                if (!confirm('Отвязать Telegram? Вы перестанете получать уведомления.')) return;
+                const msg = document.getElementById('msg-tg');
+                try {
+                    await apiFetch('/profile/telegram', { method: 'DELETE' });
+                    profile.telegram_linked = false;
+                    render(profile);
+                } catch (e) {
+                    msg.className = 'profile-msg err';
+                    msg.textContent = e.message;
+                }
+            });
+        }
+    }
+
+    function esc(s) {
+        return String(s ?? '').replace(/[&<>"']/g, m =>
+            ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+    }
+})();
+</script>
+</body>
+</html>

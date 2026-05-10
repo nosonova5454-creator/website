@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "description": "ЧитайСтрана — интернет-магазин книг (Express + PostgreSQL)",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "reset-admin": "node reset-admin.js"
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "reset-admin": "node scripts/reset-admin.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

@@ -14,7 +14,11 @@
         if (!grid) return;
 
         if (!Auth.isLoggedIn()) {
-            grid.innerHTML = '<p style="color:#666;text-align:center;padding:32px">Войдите, чтобы увидеть избранное</p>';
+            grid.innerHTML = `
+                <div class="auth-required-message">
+                    <p>Войдите, чтобы увидеть заказы</p>
+                    <a href="auth.html" class="btn-go">Войти</a>
+                </div>`;
             if (tabCount) tabCount.textContent = '0';
             return;
         }

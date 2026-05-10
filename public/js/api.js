@@ -165,20 +165,6 @@ const Dicts = {
     coverTypes: () => apiFetch('/cover-types'),
 };
 
-const Tags = {
-    getAll: () => apiFetch('/tags'),
-};
-
-
-const Promo = {
-    check: (code) => apiFetch('/promo/check', { 
-        method: 'POST', 
-        body: JSON.stringify({ code }) 
-    }),
-    getAll: () => apiFetch('/promo'),
-};
-
-
 const History = {
     get: () => apiFetch('/history'),
     add: (book_id) => apiFetch('/history', { 
@@ -213,6 +199,7 @@ function initHeader() {
                 ${user.role === 'admin' ? '👑' : '👤'} <strong>${escapeHtml(name)}</strong>
             </span>
             ${user.role === 'admin' ? '<a href="admin.html">Админка</a>' : ''}
+            <a href="profile.html">Профиль</a>
             <a href="orders.html">Заказы</a>
             <a href="mybooks.html">Мои книги</a>
             <a href="cart.html">Корзина</a>
@@ -221,6 +208,7 @@ function initHeader() {
     } else {
         iconsEl.innerHTML = `
             <a href="auth.html" class="header-login-btn">Войти</a>
+            <a href="profile.html">Профиль</a>
             <a href="orders.html">Заказы</a>
             <a href="mybooks.html">Мои книги</a>
             <a href="cart.html">Корзина</a>
@@ -251,8 +239,6 @@ window.Favorites = Favorites;
 window.Reviews = Reviews;
 window.Users = Users;
 window.Dicts = Dicts;
-window.Tags = Tags;
-window.Promo = Promo;
 window.History = History;
 window.refreshSession = refreshSession;
 window.initHeader = initHeader;

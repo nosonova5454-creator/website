@@ -2,10 +2,12 @@
 
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,13 +27,27 @@ pool.connect()
     .then(() => console.log(' PostgreSQL подключён'))
     .catch(err => console.error('Ошибка подключения к БД:', err));
 
+async function ensureSchema() {
+    try {
+        await pool.query(`
+            ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS telegram_chat_id BIGINT UNIQUE,
+                ADD COLUMN IF NOT EXISTS telegram_link_token VARCHAR(100) UNIQUE,
+                ADD COLUMN IF NOT EXISTS telegram_link_expires_at TIMESTAMPTZ
+        `);
+    } catch (err) {
+        console.error('Ошибка обновления схемы БД:', err);
+    }
+}
+
+const schemaReady = ensureSchema();
 
 
 
 app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
 app.use(express.json());
 app.get('/', (_req, res) => res.redirect('/homepage.html'));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 function verifyToken(token) {
     if (!token) return null;
@@ -56,6 +72,140 @@ function adminMiddleware(req, res, next) {
             return res.status(403).json({ error: 'Нет доступа' });
         next();
     });
+}
+
+const ORDER_STATUS_LABELS = {
+    processing: 'Обрабатывается',
+    confirmed: 'Подтверждён',
+    shipping: 'В доставке',
+    delivered: 'Доставлен',
+    cancelled: 'Отменён',
+};
+
+function getPublicUserFields() {
+    return `
+        id, login, email, first_name, last_name, phone, role, created_at,
+        telegram_chat_id IS NOT NULL AS telegram_linked
+    `;
+}
+
+function buildTelegramBotUrl(token) {
+    const botUsername = (process.env.TELEGRAM_BOT_USERNAME || '').trim().replace(/^@/, '');
+    if (!botUsername) return null;
+    return `https://t.me/${botUsername}?start=${encodeURIComponent(token)}`;
+}
+
+async function sendTelegramMessage(chatId, text) {
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    if (!botToken || !chatId) return false;
+
+    try {
+        const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text,
+                disable_web_page_preview: true,
+            }),
+        });
+
+        if (!response.ok) {
+            const body = await response.text().catch(() => '');
+            console.error('Telegram sendMessage failed:', response.status, body);
+            return false;
+        }
+        return true;
+    } catch (err) {
+        console.error('Ошибка отправки Telegram уведомления:', err);
+        return false;
+    }
+}
+
+function formatOrderStatusMessage(order) {
+    const statusText = ORDER_STATUS_LABELS[order.status] || order.status;
+    const lines = [
+        `Статус заказа №${order.id} изменился`,
+        `Новый статус: ${statusText}`,
+        `Сумма: ${order.total_amount} ₽`,
+    ];
+
+    if (order.tracking_number) lines.push(`Трек-номер: ${order.tracking_number}`);
+    if (order.delivery_note) lines.push(`Комментарий: ${order.delivery_note}`);
+    lines.push('Подробности доступны в личном кабинете ЧитайСтрана.');
+
+    return lines.join('\n');
+}
+
+async function handleTelegramMessage(message) {
+    const chatId = message?.chat?.id;
+    const text = (message?.text || '').trim();
+    const match = text.match(/^\/start\s+([a-f0-9]{48})$/i);
+
+    if (!chatId || !match) {
+        if (chatId && text.startsWith('/start')) {
+            await sendTelegramMessage(chatId, 'Откройте привязку Telegram в профиле на сайте и нажмите кнопку «Привязать Telegram».');
+        }
+        return;
+    }
+
+    const token = match[1];
+    await pool.query(
+        'UPDATE users SET telegram_chat_id=NULL WHERE telegram_chat_id=$1',
+        [chatId]
+    );
+
+    const result = await pool.query(`
+        UPDATE users
+        SET telegram_chat_id=$1,
+            telegram_link_token=NULL,
+            telegram_link_expires_at=NULL
+        WHERE telegram_link_token=$2
+          AND telegram_link_expires_at > NOW()
+          AND is_active=TRUE
+        RETURNING first_name, login
+    `, [chatId, token]);
+
+    if (!result.rows.length) {
+        await sendTelegramMessage(chatId, 'Ссылка для привязки устарела. Создайте новую ссылку в профиле на сайте.');
+        return;
+    }
+
+    const name = result.rows[0].first_name || result.rows[0].login || 'профиль';
+    await sendTelegramMessage(chatId, `Telegram привязан к профилю ${name}. Теперь сюда будут приходить уведомления о заказах.`);
+}
+
+let telegramPollingOffset = 0;
+let telegramPollingActive = false;
+
+async function pollTelegramUpdates() {
+    if (!process.env.TELEGRAM_BOT_TOKEN || telegramPollingActive) return;
+    telegramPollingActive = true;
+
+    try {
+        const params = new URLSearchParams({
+            timeout: '25',
+            allowed_updates: JSON.stringify(['message']),
+        });
+        if (telegramPollingOffset) params.set('offset', String(telegramPollingOffset));
+
+        const response = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getUpdates?${params.toString()}`);
+        const data = await response.json();
+
+        if (data.ok && Array.isArray(data.result)) {
+            for (const update of data.result) {
+                telegramPollingOffset = update.update_id + 1;
+                if (update.message) await handleTelegramMessage(update.message);
+            }
+        } else if (!data.ok) {
+            console.error('Telegram getUpdates failed:', data.description || data);
+        }
+    } catch (err) {
+        console.error('Ошибка Telegram polling:', err.message);
+    } finally {
+        telegramPollingActive = false;
+        setTimeout(pollTelegramUpdates, 1000);
+    }
 }
 
 
@@ -124,12 +274,109 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/auth/me', authMiddleware, async (req, res) => {
     try {
         const result = await pool.query(
-            'SELECT id,login,email,first_name,last_name,phone,role,created_at FROM users WHERE id=$1',
+            `SELECT ${getPublicUserFields()} FROM users WHERE id=$1`,
             [req.user.id]
         );
         res.json(result.rows[0]);
     } catch (err) {
         res.status(500).json({ error: 'Ошибка сервера' });
+    }
+});
+
+// профиль
+
+app.get('/api/profile', authMiddleware, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT ${getPublicUserFields()} FROM users WHERE id=$1 AND is_active=TRUE`,
+            [req.user.id]
+        );
+        if (!result.rows.length) return res.status(404).json({ error: 'Профиль не найден' });
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Ошибка сервера' });
+    }
+});
+
+app.put('/api/profile', authMiddleware, async (req, res) => {
+    try {
+        const firstName = (req.body.first_name || '').trim();
+        const lastName = (req.body.last_name || '').trim();
+        const email = (req.body.email || '').trim().toLowerCase();
+        const phone = (req.body.phone || '').trim();
+
+        if (!email) return res.status(400).json({ error: 'Email обязателен' });
+
+        const duplicate = await pool.query(
+            'SELECT id FROM users WHERE email=$1 AND id<>$2',
+            [email, req.user.id]
+        );
+        if (duplicate.rows.length) {
+            return res.status(409).json({ error: 'Этот email уже используется' });
+        }
+
+        const result = await pool.query(`
+            UPDATE users
+            SET first_name=$1, last_name=$2, email=$3, phone=$4
+            WHERE id=$5 AND is_active=TRUE
+            RETURNING ${getPublicUserFields()}
+        `, [firstName, lastName, email, phone, req.user.id]);
+
+        if (!result.rows.length) return res.status(404).json({ error: 'Профиль не найден' });
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Ошибка сервера' });
+    }
+});
+
+app.post('/api/profile/telegram-token', authMiddleware, async (req, res) => {
+    try {
+        if (!process.env.TELEGRAM_BOT_USERNAME) {
+            return res.status(500).json({ error: 'На сервере не указан TELEGRAM_BOT_USERNAME' });
+        }
+
+        const token = crypto.randomBytes(24).toString('hex');
+        await pool.query(`
+            UPDATE users
+            SET telegram_link_token=$1, telegram_link_expires_at=NOW() + INTERVAL '30 minutes'
+            WHERE id=$2 AND is_active=TRUE
+        `, [token, req.user.id]);
+
+        res.json({
+            url: buildTelegramBotUrl(token),
+            expires_in_minutes: 30,
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Не удалось создать ссылку Telegram' });
+    }
+});
+
+app.delete('/api/profile/telegram', authMiddleware, async (req, res) => {
+    try {
+        await pool.query(`
+            UPDATE users
+            SET telegram_chat_id=NULL,
+                telegram_link_token=NULL,
+                telegram_link_expires_at=NULL
+            WHERE id=$1
+        `, [req.user.id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Не удалось отвязать Telegram' });
+    }
+});
+
+app.post('/api/telegram/webhook', async (req, res) => {
+    try {
+        if (req.body.message) await handleTelegramMessage(req.body.message);
+        res.json({ ok: true });
+    } catch (err) {
+        console.error('Ошибка Telegram webhook:', err);
+        res.json({ ok: true });
     }
 });
 
@@ -439,8 +686,35 @@ app.post('/api/orders', authMiddleware, async (req, res) => {
 app.patch('/api/orders/:id', adminMiddleware, async (req, res) => {
     try {
         const { status, delivery_note, tracking_number } = req.body;
-        const result = await pool.query(`UPDATE orders SET status = COALESCE($1, status), delivery_note = COALESCE($2, delivery_note), tracking_number = COALESCE($3, tracking_number) WHERE id=$4 RETURNING *`, [status || null, delivery_note || null, tracking_number || null, req.params.id]);
+
+        const before = await pool.query(`
+            SELECT o.*, u.telegram_chat_id
+            FROM orders o
+            JOIN users u ON u.id = o.user_id
+            WHERE o.id=$1
+        `, [req.params.id]);
+        if (!before.rows.length) return res.status(404).json({ error: 'Заказ не найден' });
+
+        const result = await pool.query(`
+            UPDATE orders
+            SET status = COALESCE($1, status),
+                delivery_note = COALESCE($2, delivery_note),
+                tracking_number = COALESCE($3, tracking_number)
+            WHERE id=$4
+            RETURNING *
+        `, [status || null, delivery_note || null, tracking_number || null, req.params.id]);
+
         if (!result.rows.length) return res.status(404).json({ error: 'Заказ не найден' });
+
+        const oldOrder = before.rows[0];
+        const updatedOrder = result.rows[0];
+        if (status && oldOrder.status !== updatedOrder.status && oldOrder.telegram_chat_id) {
+            sendTelegramMessage(
+                oldOrder.telegram_chat_id,
+                formatOrderStatusMessage(updatedOrder)
+            ).catch(err => console.error('Ошибка фоновой отправки Telegram:', err));
+        }
+
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err);
@@ -745,4 +1019,15 @@ app.post('/api/promo/check', async (req, res) => {
 // Запуск сервера
 
 
-app.listen(PORT, () => console.log(` Сервер запущен: http://localhost:${PORT}`));
+async function startServer() {
+    await schemaReady;
+    app.listen(PORT, () => {
+        console.log(` Сервер запущен: http://localhost:${PORT}`);
+        if (['true', '1', 'polling'].includes(String(process.env.TELEGRAM_ENABLE_POLLING || '').toLowerCase())) {
+            console.log(' Telegram polling включён');
+            pollTelegramUpdates();
+        }
+    });
+}
+
+startServer();

@@ -43,6 +43,9 @@ CREATE TABLE users (
     first_name      VARCHAR(100),
     last_name       VARCHAR(100),
     phone           VARCHAR(20),
+    telegram_chat_id BIGINT UNIQUE,
+    telegram_link_token VARCHAR(100) UNIQUE,
+    telegram_link_expires_at TIMESTAMPTZ,
     role            VARCHAR(20) NOT NULL DEFAULT 'user'
                         CHECK (role IN ('user', 'admin')),
     is_active       BOOLEAN NOT NULL DEFAULT TRUE,
